@@ -229,7 +229,8 @@ class ImagePane(Pane):
 
     def delete_marked(self):
         none_marked = True
-        for key, value in self.marked_widgets.items():
+        candidates = self.marked_widgets.items()
+        for key, value in candidates:
             if value == "marked" and key.tag != '<none>:<none>':
                 widget = key
                 self.on_delete(widget)

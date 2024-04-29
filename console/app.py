@@ -67,8 +67,8 @@ class ConsoleApp(proxyForInterface(IEventLoop)):
         self.state = None
 
     def init(self, options, root_cls):
-        self.state = DockerState(options.host, '1.18', options.freq)
-        self.client = docker.Client(base_url=options.host, version='1.18')
+        self.state = DockerState(options.host, 'auto', options.freq)
+        self.client = docker.Client(base_url=options.host, version='auto')
         self.options = options
         self.root = root_cls()
         event_loop = urwid.TwistedEventLoop(manage_reactor=True)

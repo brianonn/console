@@ -7,6 +7,10 @@ import time
 
 from twisted.internet import reactor, threads
 
+def onError(error):
+    print(error)
+    return error
+
 class ContainerMonitor(object):
     def __init__(self, client, frequency=1, all=False):
         self.client = client
@@ -18,7 +22,7 @@ class ContainerMonitor(object):
 
     def process_containers(self, container_data):
         containers = []
-        for container in container_data:
+        for container in container_data or []:
             created = datetime.fromtimestamp(container['Created'])
             now = datetime.now()
             containers.append({
@@ -44,6 +48,7 @@ class ContainerMonitor(object):
         d = threads.deferToThread(self.client.containers, all=self.all)
         d.addCallback(self.process_containers)
         d.addCallback(self.emit_containers)
+        d.addErrback(onError)
         return d
 
 class ImageMonitor(object):
@@ -56,12 +61,12 @@ class ImageMonitor(object):
 
     def process_images(self, image_data):
         images = []
-        for image in image_data:
+        for image in image_data or []:
             created = datetime.fromtimestamp(image['Created'])
             now = datetime.now()
             time_diff = now - created
             id = image['Id']
-            for tag in image['RepoTags']:
+            for tag in image['RepoTags'] or []:
                 images.append({
                     'id': id,
                     'tag': tag,
@@ -82,6 +87,7 @@ class ImageMonitor(object):
         d = threads.deferToThread(self.client.images, all=self.all)
         d.addCallback(self.process_images)
         d.addCallback(self.emit_images)
+        d.addErrback(onError)
         return d
 
 

@@ -23,7 +23,7 @@ def catch_docker_errors(fn):
         try:
             d = fn(self, *args, **kwargs)
             d.addErrback(popup_failure, self)
-        except docker.errors.APIError, e:
+        except docker.errors.APIError as e:
             popup_failure(e, self)
     return decorator
 
